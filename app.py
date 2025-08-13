@@ -6,31 +6,25 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-# ---------------------------
-# Load model and dataset
-# ---------------------------
+
 @st.cache_resource
 def load_model():
     return joblib.load("model.pkl")
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("data/dataset.csv")  # Change path if needed
+    return pd.read_csv("data/dataset.csv") 
 
 model = load_model()
 df = load_data()
 
-# ---------------------------
-# Sidebar Navigation
-# ---------------------------
+
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Data Exploration", "Visualizations", "Model Prediction", "Model Performance"])
 
-# ---------------------------
-# Page 1: Data Exploration
-# ---------------------------
+
 if page == "Data Exploration":
-    st.title("📊 Data Exploration")
+    st.title("Data Exploration")
     st.write("### Dataset Overview")
     st.write(df.shape)
     st.write(df.dtypes)
@@ -40,43 +34,39 @@ if page == "Data Exploration":
     columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist())
     st.dataframe(df[columns])
 
-# ---------------------------
-# Page 2: Visualizations
-# ---------------------------
-elif page == "Visualizations":
-    st.title("📈 Visualizations")
 
-    # Histogram
+elif page == "Visualizations":
+    st.title("Visualizations")
+
+
     st.subheader("Histogram")
     col = st.selectbox("Select column for histogram", df.columns)
     fig, ax = plt.subplots()
     sns.histplot(df[col], kde=True, ax=ax)
     st.pyplot(fig)
 
-    # Scatter plot (Plotly)
+
     st.subheader("Scatter Plot")
     x_axis = st.selectbox("X-axis", df.columns)
     y_axis = st.selectbox("Y-axis", df.columns)
     fig2 = px.scatter(df, x=x_axis, y=y_axis, color=df.columns[-1])
     st.plotly_chart(fig2)
 
-    # Box plot
+
     st.subheader("Box Plot")
     box_col = st.selectbox("Select column for box plot", df.columns)
     fig3, ax3 = plt.subplots()
     sns.boxplot(x=df[box_col], ax=ax3)
     st.pyplot(fig3)
 
-# ---------------------------
-# Page 3: Model Prediction
-# ---------------------------
+
 elif page == "Model Prediction":
     st.title("🔮 Model Prediction")
 
     st.write("Enter feature values to get a prediction:")
 
     inputs = []
-    for col in df.columns[:-1]:  # assuming last column is target
+    for col in df.columns[:-1]:  
         val = st.number_input(f"{col}", float(df[col].min()), float(df[col].max()), float(df[col].mean()))
         inputs.append(val)
 
@@ -88,9 +78,7 @@ elif page == "Model Prediction":
         else:
             st.success(f"Prediction: {prediction[0]}")
 
-# ---------------------------
-# Page 4: Model Performance
-# ---------------------------
+
 elif page == "Model Performance":
     from sklearn.metrics import classification_report, confusion_matrix
     st.title("📏 Model Performance")
